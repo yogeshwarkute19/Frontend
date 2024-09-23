@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Students</title>
+    <style>
+        body {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            font-size: medium;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .table-container {
+            overflow-x: auto; /* Enables horizontal scrolling */
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            display: none; /* Hide table initially */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+            }
+
+            button {
+                font-size: medium;
+                padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 683px) {
+            .container {
+                width: 90%;
+                margin: 50px auto;
+                padding: 10px;
+            }
+
+            label, input[type="number"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            th, td {
+                font-size: 14px;
+                padding: 6px;
+            }
+
+            .table-container {
+                overflow-x: auto; /* Keep overflow on smaller screens */
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            }
+
+            table {
+                font-size: 14px;
+                display: none; /* Display table on small screens */
+                white-space: nowrap; /* Prevent text wrapping to make horizontal scrolling */
+            }
+        }
+
+        /* Show table header when table is visible */
+        .table-visible th {
+            display: table-cell;
+        }
+
+    </style>
+</head>
+
+<body>
+    <script>
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = './login.html';
+        }
+    </script>
+    <div class="container">
+        <h1>Get Students</h1>
+        <div class="form-group">
+            <label for="student_id">Get Student by ID:</label>
+            <input type="number" id="student_id" name="student_id" required>
+        </div>
+        <button onclick="getStudentById()">Get Student</button>
+
+        <div class="form-group">
+            <label>Get All Students:</label>
+            <input type="hidden" id="get_all_students" name="get_all_students" value="true">
+        </div>
+        <button onclick="getAllStudents()">Get All Students</button>
+
+        <div class="table-container">
+            <table id="students_table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile No</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody id="students_table_body">
+                    <!-- Table rows will be dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function getStudentById() {
+            var studentId = document.getElementById("student_id").value;
+
+            fetch('http://localhost:8888/api/students/getStudent/' + studentId)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    if (data) {
+                        displayStudent(data);
+                    } else {
+                        alert('Student not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching student data.');
+                });
+        }
+
+        function getAllStudents() {
+            fetch('http://localhost:8888/api/students/getStudentList')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    if (Array.isArray(data)) {
+                        displayAllStudents(data);
+                    } else if (data && Array.isArray(data.student)) {
+                        displayAllStudents(data.student);
+                    } else {
+                        alert('No students found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching student data.');
+                });
+        }
+
+        function displayStudent(student) {
+            var tableBody = document.getElementById("students_table_body");
+            tableBody.innerHTML = "";
+
+            var row = document.createElement("tr");
+
+            var idCell = document.createElement("td");
+            idCell.textContent = student.id;
+            row.appendChild(idCell);
+
+            var nameCell = document.createElement("td");
+            nameCell.textContent = student.name;
+            row.appendChild(nameCell);
+
+            var emailCell = document.createElement("td");
+            emailCell.textContent = student.email;
+            row.appendChild(emailCell);
+
+            var mobileNoCell = document.createElement("td");
+            mobileNoCell.textContent = student.mobileNo;
+            row.appendChild(mobileNoCell);
+
+            var genderCell = document.createElement("td");
+            genderCell.textContent = student.gender;
+            row.appendChild(genderCell);
+
+            tableBody.appendChild(row);
+
+            var table = document.getElementById("students_table");
+            table.style.display = "table";
+            table.classList.add('table-visible');
+        }
+
+        function displayAllStudents(students) {
+            var tableBody = document.getElementById("students_table_body");
+            tableBody.innerHTML = "";
+
+            students.forEach(student => {
+                var row = document.createElement("tr");
+
+                var idCell = document.createElement("td");
+                idCell.textContent = student.id;
+                row.appendChild(idCell);
+
+                var nameCell = document.createElement("td");
+                nameCell.textContent = student.name;
+                row.appendChild(nameCell);
+
+                var emailCell = document.createElement("td");
+                emailCell.textContent = student.email;
+                row.appendChild(emailCell);
+
+                var mobileNoCell = document.createElement("td");
+                mobileNoCell.textContent = student.mobileNo;
+                row.appendChild(mobileNoCell);
+
+                var genderCell = document.createElement("td");
+                genderCell.textContent = student.gender;
+                row.appendChild(genderCell);
+
+                tableBody.appendChild(row);
+            });
+
+            var table = document.getElementById("students_table");
+            table.style.display = "table";
+            table.classList.add('table-visible');
+        }
+    </script>
+</body>
+
+</html>

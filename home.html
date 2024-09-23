@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management Project</title>
+    <link href="../css/home.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #3c4e9d;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            margin-top: 20px;
+        }
+
+        .options a {
+            text-decoration: none;
+            color: #3c4e9d;
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: 1px solid #3c4e9d;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            display: inline-block;
+        }
+
+        .options a:hover {
+            background-color: rgba(189, 17, 123, 0.832);
+            color: white;
+        }
+
+        /* Media Queries */
+
+        @media (min-width: 1024px) {
+            .container {
+                width: 70%;
+                margin: auto;
+            }
+
+            h1 {
+                font-size: 48px;
+            }
+
+            .options a {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
+        }
+
+        @media (min-width: 481px) and (max-width: 1024px) {
+            .container {
+                width: 80%;
+                margin: auto;
+                margin-top: -30vh;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .options a {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 5px;
+                margin: 0 auto;
+                margin-top: -70px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .options {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .options a {
+                margin: 8px 0;
+                padding: 10px 20px;
+                width: 100%;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = './login.html';
+        }
+    </script>
+    <div class="container">
+        <h1>Student Management Project</h1>
+        <div class="options">
+            <a href="./add.html">Add</a>
+            <a href="./update.html">Update</a>
+            <a href="./delete.html">Delete</a>
+            <a href="./get.html">Get</a>
+        </div>
+    </div>
+</body>
+
+</html>
